@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMove : MonoBehaviour
 {
-    public Rigidbody2D rb;
-    public Transform groundCheck;
+    private Rigidbody2D _rb;
+    private Transform groundCheck;
     public LayerMask groundLayer;
 
     private float horizontal;
@@ -12,12 +13,17 @@ public class PlayerMove : MonoBehaviour
     private bool isFacingRight = true;
 
     [Header("Jump Tweaks")]
-    [Range(0f, 18f)]
-    public float jumpingPower = 8f; 
+    [Range(0f, 18f)] public float jumpingPower = 8f; 
     [Range(0f, 5f)]public  float fallMultiplier = 2.5f;
     [Range(0f, 5f)]public float lowJumpMultiplier = 2f;
 
     private bool jumpHeld = false;
+
+    private void Start()
+    {
+        _rb = GetComponent<Rigidbody2D>();
+        groundCheck = transform.Find("GroundCheck");
+    }
 
     void Update()
     {
@@ -32,19 +38,19 @@ public class PlayerMove : MonoBehaviour
         }
 
         // Apply gravity tweaks
-        if (rb.linearVelocity.y < 0)
+        if (_rb.linearVelocity.y < 0)
         {
-            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+            _rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
-        else if (rb.linearVelocity.y > 0 && !jumpHeld)
+        else if (_rb.linearVelocity.y > 0 && !jumpHeld)
         {
-            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+            _rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
         }
     }
 
     private void FixedUpdate()
     {
-        rb.linearVelocity = new Vector2(horizontal * speed, rb.linearVelocity.y);
+        _rb.linearVelocity = new Vector2(horizontal * speed, _rb.linearVelocity.y);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -56,7 +62,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (context.performed && IsGrounded())
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpingPower);
+            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, jumpingPower);
             jumpHeld = true;
         }
 
