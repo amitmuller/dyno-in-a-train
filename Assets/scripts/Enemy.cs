@@ -6,7 +6,7 @@ public abstract class Enemy : MonoBehaviour
     public Transform player;
 
     [Header("Stats")]
-    public float detectionRange = 5f;
+    public float detectionRange = 10f;
     public float attackRadius = 1.5f;
     public float attackCooldown = 2f;
     public int health = 100;
@@ -17,11 +17,14 @@ public abstract class Enemy : MonoBehaviour
     private void Update()
     {
         float distance = Vector3.Distance(transform.position, player.position);
-
+        Debug.unityLogger.Log(player.position + " : " + distance);
+        Debug.DrawRay(transform.position, player.position - transform.position, Color.red);
         if (distance < detectionRange)
-            // Debug.Log(distance);
+        {
+            Debug.Log(distance);
             // Debug.DrawRay(transform.position, player.position - transform.position, Color.red);
             GoToPlayer();
+        }
 
         if (distance < attackRadius && Time.time - lastAttackTime > attackCooldown)
         {
